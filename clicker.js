@@ -1,11 +1,11 @@
 const target = document.querySelector('.community-points-summary .tw-z-above .tw-absolute .tw-transition');
 
-const observer = new MutationObserver((ms, obs) => {
+const observer = new MutationObserver((mutations, obs) => {
 
-  for (let m of ms) {
-    const b = target.querySelector('button');
-    if (b) {
-     b.click();
+  for (let mutation of mutations) {
+    const button = target.querySelector('button');
+    if (button) {
+      button.click();
     }
   }
 });
