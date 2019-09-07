@@ -1,16 +1,16 @@
-const target = document.querySelector('.community-points-summary .tw-z-above .tw-absolute .tw-transition');
+target = document.querySelector('.community-points-summary .tw-z-above .tw-absolute .tw-transition');
 
-const observer = new MutationObserver((mutations) => {
+observer = new MutationObserver((ms, obs) => {
   console.log('> new mutations');
 
-  for (let mutation of mutations) {
-    console.log('> new mutation', mutation);
+  for (let m of ms) {
+    console.log('> new mutation', m.addedNodes);
 
-    const button = target.querySelector('button');
-    if (button) {
-     button.click();
+    const b = target.querySelector('button');
+    if (b) {
+     b.click();
     }
   }
 });
 
-observer.observe(target, { childList: true });
+observer.observe(target, { attributes: true, childList: true, subtree: true });
