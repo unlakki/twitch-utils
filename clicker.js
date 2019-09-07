@@ -1,6 +1,6 @@
-target = document.querySelector('.community-points-summary .tw-z-above .tw-absolute .tw-transition');
+const target = document.querySelector('.community-points-summary .tw-z-above .tw-absolute .tw-transition');
 
-observer = new MutationObserver((ms, obs) => {
+const observer = new MutationObserver((ms, obs) => {
 
   for (let m of ms) {
     const b = target.querySelector('button');
