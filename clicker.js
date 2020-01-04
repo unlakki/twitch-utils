@@ -1,18 +1,27 @@
-const target = document.querySelector('.community-points-summary .tw-z-above .tw-absolute .tw-transition');
+// ==UserScript==
+// @name Twitch points
+// @namespace http://github.net/uwufule/
+// @version 0.2
+// @description Auto collect points chest.
+// @author Uwufule
+// @match https://www.twitch.tv/*
+// @grant none
+// ==/UserScript==
 
-const observer = new MutationObserver((mutations) => {
-  for (let mutation of mutations) {
-    console.log(`> mutation ${mutation.type}`);
+(function() {
+  function observe(target, config, func) {
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => func(mutation, observer));
+    });
 
-    const button = target.querySelector('button');
-    if (button) {
-      console.log('> coins collected');
-      button.click();
-    }
+    observer.observe(target, config);
+    return observer;
   }
-});
 
-observer.observe(target, { childList: true, subtree: true });
-
-// if you want to stop automatic coin collection, use the command below (without double slashes):
-// observer.disconnect();
+  observe(document.body, { childList: true, subtree: true }, (generalMutation, generalObserver) => {
+    const pointsButton = document.querySelector('[data-test-selector="community-points-summary"]>div:nth-child(2) button');
+    if (pointsButton) {
+      pointsButton.click();
+    }
+  });
+})();
