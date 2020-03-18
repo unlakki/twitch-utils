@@ -3,7 +3,7 @@
 // @namespace http://github.net/uwufule/
 // @version 0.2
 // @description Auto collect points chest.
-// @author Uwufule
+// @author unlakki
 // @match https://www.twitch.tv/*
 // @grant none
 // ==/UserScript==
