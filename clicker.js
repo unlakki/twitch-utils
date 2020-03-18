@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name Twitch points
-// @namespace http://github.net/uwufule/
+// @namespace http://github.net/unlakki/
 // @version 0.2
 // @description Auto collect points chest.
 // @author unlakki
