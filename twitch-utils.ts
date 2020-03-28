@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         twitch-utils
 // @namespace    https://github.com/unlakki/
-// @version      0.4
+// @version      0.5
 // @description  Fuck unfollow button twitch. Auto collect points. Hide emotes.
 // @author       unlakki
 // @match        https://www.twitch.tv/*
@@ -12,7 +12,7 @@ const MAX_ALLOWED_DUPLICATE_EMOTES_IN_ONE_MESSAGE = 2;
 
 let isHideMoreThenTwoSimilarEmotesInOneMessageActive = false;
 let isUnfollowButtonHidden = false;
-let isAutoCollectChannelPointsAclive = false;
+let isAutoCollectChannelPointsActive = false;
 
 interface MutationObserverFunc {
   (mutation: MutationRecord, observer: MutationObserver): void;
@@ -26,10 +26,7 @@ const observe = (target: Element, config: MutationObserverInit, func: MutationOb
   return observer;
 };
 
-interface EmoteInfo {
-  quantity: number;
-  nodes: Element[];
-}
+type EmoteInfo = [string, { quantity: number, nodes: Element[] }];
 
 const hideMoreThenTwoSimilarEmotesInOneMessage = () => {
   const target = document.querySelector('.chat-list__list-container');
@@ -39,21 +36,20 @@ const hideMoreThenTwoSimilarEmotesInOneMessage = () => {
 
   isHideMoreThenTwoSimilarEmotesInOneMessageActive = true;
 
-  const reducer = (emotes: Map<string, EmoteInfo>, emoteElement: HTMLImageElement) => {
+  const reducer = (emotes: EmoteInfo[], emoteElement: HTMLImageElement) => {
     const emoteName = emoteElement.alt;
 
-    if (!emotes.has(emoteName)) {
-      emotes.set(emoteName, { quantity: 0, nodes: [] });
+    if (emotes.findIndex((e) => e[0] === emoteName) === -1) {
+      emotes.push([emoteName, { quantity: 0, nodes: [] }]);
     }
 
-    const emoteInfo = <EmoteInfo>emotes.get(emoteName);
-    const buffer = emoteInfo.nodes;
+    const emoteInfo = emotes[emotes.findIndex((e) => e[0] === emoteName)][1];
 
     if (emoteInfo.quantity >= MAX_ALLOWED_DUPLICATE_EMOTES_IN_ONE_MESSAGE) {
-      buffer.push(emoteElement);
+      emoteInfo.nodes.push(emoteElement);
     }
 
-    emotes.set(emoteName, { nodes: buffer, quantity: emoteInfo.quantity + 1 });
+    emoteInfo.quantity += 1;
 
     return emotes;
   };
@@ -63,9 +59,9 @@ const hideMoreThenTwoSimilarEmotesInOneMessage = () => {
       if (node instanceof HTMLDivElement) {
         const emotesWhichMustBeDeleted = Array.from(
           node.querySelectorAll<HTMLImageElement>('.chat-line__message--emote'),
-        ).reduce<Map<string, EmoteInfo>>(reducer, new Map());
-        
-        Array.from(emotesWhichMustBeDeleted).forEach((emoteInfo) => {
+        ).reduce<EmoteInfo[]>(reducer, []);
+
+        emotesWhichMustBeDeleted.forEach((emoteInfo) => {
           emoteInfo[1].nodes.forEach((emoteElement) => emoteElement.remove());
         });
       }
@@ -88,11 +84,11 @@ const hideUnfollowButton = () => {
 
 const autoCollectChannelPoints = () => {
   const target = document.querySelector('.community-points-summary');
-  if (!target || isAutoCollectChannelPointsAclive) {
+  if (!target || isAutoCollectChannelPointsActive) {
     return;
   }
 
-  isAutoCollectChannelPointsAclive = true;
+  isAutoCollectChannelPointsActive = true;
 
   observe(target, { childList: true, subtree: true }, (mutation) => {
     mutation.addedNodes.forEach((node) => {
@@ -116,7 +112,7 @@ observe(document.body, { childList: true, subtree: true }, (mutation, observer) 
   if (
     isHideMoreThenTwoSimilarEmotesInOneMessageActive
     && isUnfollowButtonHidden
-    && isAutoCollectChannelPointsAclive
+    && isAutoCollectChannelPointsActive
   ) {
     observer.disconnect();
   }
