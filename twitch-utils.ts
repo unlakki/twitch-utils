@@ -2,7 +2,7 @@
 // @name         twitch-utils
 // @namespace    https://github.com/unlakki/
 // @version      0.5
-// @description  Fuck unfollow button twitch. Auto collect points. Hide emotes.
+// @description  Fuck unfollow button. Auto collect points. Hide emotes.
 // @author       unlakki
 // @match        https://www.twitch.tv/*
 // @grant        none
