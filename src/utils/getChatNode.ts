@@ -1,8 +1,6 @@
-export const CHAT_CLASSNAME = 'chat-scrollable-area__message-container';
+import getTargetElement from './getTargetElement';
 
-const getTargetElement = (target?: Element) => (
-  (target instanceof Element) ? target : document
-);
+export const CHAT_SELECTOR = 'chat-scrollable-area__message-container';
 
 export default (from?: Element) => getTargetElement(from)
-  .querySelector(`.${CHAT_CLASSNAME}`);
+  .querySelector(`.${CHAT_SELECTOR}`);
