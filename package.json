@@ -6,7 +6,7 @@
   "author": "unlakki",
   "license": "MIT",
   "scripts": {
-    "start": "webpack"
+    "build": "webpack"
   },
   "devDependencies": {
     "ts-loader": "^7.0.5",
