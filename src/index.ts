@@ -1,28 +1,25 @@
-import createObserver from './utils/createObserver';
-import getChatNode from './utils/getChatNode';
-import getPointsNode from './utils/getPointsNode';
-import createChatObserver from './chat';
-import createCommutityPointsObserver from './communityPoints';
-import loadConfig from './config';
+import CommunityPointsCollector from './core/services/CommunityPointsCollector';
+import MutationObserverHelper from './core/utils/MutationObserverHelper';
 
-let chatObserver: MutationObserver;
+const communityPointsCollector = new CommunityPointsCollector();
 
-let pointsObserver: MutationObserver;
+const init: MutationObserverInit = {
+  childList: true,
+  subtree: true,
+};
 
-const config = loadConfig();
-
-createObserver(document.body, { childList: true, subtree: true }, (mutations, observer) => {
+const watcher = (mutations: MutationRecord[], observer: MutationObserver) => {
   mutations.forEach((mutation) => {
     mutation.addedNodes.forEach((node) => {
-      const chatNode = getChatNode(<Element>node);
-       if (!chatObserver && chatNode) {
-        chatObserver = createChatObserver(config)(chatNode);
-       }
-
-       const pointsNode = getPointsNode(<Element>node);
-       if (!pointsObserver && pointsNode) {
-        pointsObserver = createCommutityPointsObserver(config)(pointsNode);
-       }
+      if (node instanceof Element) {
+        const communityPointsNode = node.querySelector(CommunityPointsCollector.NODE_SELECTOR);
+        if (communityPointsNode) {
+          communityPointsCollector.startWatch();
+          observer.disconnect();
+        }
+      }
     });
   });
-});
+};
+
+MutationObserverHelper.createMutationOnserver(document.body, init, watcher);
